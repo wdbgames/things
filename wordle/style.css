@@ -1,0 +1,200 @@
+:root {
+    --wordle-icon: url("assets/wordle-icon.svg");
+    --vertical-spacing-0-5: 4px;
+    --horizontal-spacing-0-5: 4px;
+    --vertical-spacing-1-5: 12px;
+    --bg-btn-emphasis-constant: #121212;
+    --text-alternate-constant: #f8f8f8;
+    --color-background: #121213;
+}
+
+@font-face {
+    font-family: "nyt-karnakcondensed";
+    src: url("assets/karnakcondensed-normal-700.woff2");
+    font-style: normal;
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: "nyt-karnak";
+    src: url("assets/karnak-normal-400.woff2");
+}
+
+@font-face {
+    font-family: "nyt-franklin";
+    src: url("assets/franklin-normal-600.woff2");
+    font-style: normal;
+    font-weight: 600;
+}
+
+* {
+    margin: 0;
+    margin-bottom: 0px;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+html, body {
+    height: 100%;
+    background-color: var(--color-background);
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+.welcome {
+    position: relative;
+    color: #000;
+    max-width: 100%;
+    width: 100%;
+    overflow-y: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: #e3e3e1;
+}
+
+.welcomeFade {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s;
+}
+
+.welcomeContainer {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    flex: 1;
+    padding: calc(var(--vertical-spacing-0-5) * 12.5) calc(var(--horizontal-spacing-0-5) * 10.5) 0;
+}
+
+.welcomeMain {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.welcomeTitle {
+    font-size: 50px;
+    line-height: 52px;
+    font-family: "nyt-karnakcondensed";
+    font-weight: bold;
+    margin-bottom: var(--vertical-spacing-1-5);
+    position: relative;
+    text-align: center;
+    margin-top: 0px;
+}
+
+.welcomeIcon {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: var(--wordle-icon);
+    height: 80px;
+    margin-bottom: var(--vertical-spacing-1-5);
+}
+
+.welcomeSubtitle {
+    max-width: 375px;
+    font-size: 38px;
+    line-height: 44px;
+    margin-top: 0px;
+    margin-bottom: calc(var(--vertical-spacing-0-5) * 9);
+    text-align: center;
+    font-family: "nyt-karnak";
+    text-align: center;
+    font-weight: 400;
+}
+
+.welcomeButtonWrapper {
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.welcomeButtonContainer {
+    margin-bottom: 26px !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    align-items: flex-start;
+    width: max-content;
+}
+
+.welcomeButtonContainer button {
+    position: relative;
+    border: none;
+    height: 3em;
+    border-radius: 1.5em;
+    align-content: center;
+    font-size: clamp(.95em, 1vw + .125em, 1em);
+    font-weight: 600;
+    font-family: "nyt-franklin";
+    letter-spacing: .05em;
+    margin: 0 10px 8px;
+    background: var(--bg-btn-emphasis-constant);
+    color: var(--text-alternate-constant);
+    padding: 1px 16px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    min-width: 9.375em;
+    min-width: min(9.375em, 300px);
+    cursor: pointer !important;
+}
+
+.welcomeDateContainer {
+    text-align: center;
+}
+
+.welcomeDateContainer h3 {
+    display: block;
+    font-size: 1em;
+    line-height: 1.25;
+    letter-spacing: .005em;
+    font-family: "nyt-franklin";
+    font-weight: 600;
+    margin: 0px;
+    padding: 0px;
+}
+
+.welcomeDateContainer p {
+    display: block;
+    font-size: 1em;
+    line-height: 1.25;
+    letter-spacing: .005em;
+    margin: 0px;
+    padding: 0px;
+    font-family: Arial;
+}
+
+.toolbar {
+
+}
+
+.boardContainer {
+
+}
+
+.board {
+
+}
+
+.tile {
+
+}
