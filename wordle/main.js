@@ -1,14 +1,35 @@
-function play() {
-    const welcomeScreen = document.querySelector(".welcome");
-    welcomeScreen.classList.add("welcomeFade");
+const DEBUG = false;
 
+function showElement(id) {
+    document.getElementById(id).classList.remove("hidden");
+}
+
+function hideElement(id) {
+    document.getElementById(id).classList.add("hidden");
+}
+
+function play() {
+    showElement("game");
+    welcome.classList.add("welcomeFade");
+    
     setTimeout(() => {
-        welcomeScreen.style.display = "none";
+        hideElement("welcome");
     }, 400);
 }
 
-function load() {
+function info() {
+}
 
+function settings() {
+}
+
+function load() {
+    showElement("welcome");
+    hideElement("game");
+
+    if(DEBUG) {
+        play();
+    }
 }
 
 load();
