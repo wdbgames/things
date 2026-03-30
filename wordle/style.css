@@ -7,6 +7,16 @@
     --text-alternate-constant: #f8f8f8;
     --color-background: #121213;
     --horizontal-spacing-3: 24px;
+    --color-tone-4: #3a3a3c;
+    --tile-text-color: #f8f8f8;
+    --key-bg: #818384;
+    --key-text-color: #f8f8f8;
+    --vertical-spacing-1: 8px;
+    --keyboard-height: 200px;
+    --horizontal-spacing-1: 8px;
+    --game-max-width: 500px;
+    --header-toolbar-height: 49px;
+    --header-height: 65px;
 }
 
 @font-face {
@@ -226,18 +236,77 @@ html, body {
   background-color: #363636;
 }
 
-.tileContainer {
-
+.board {
+    width: 300px;
+    height: 360px;
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+    min-width: min(250px, 100vw);
+    margin: 0 auto;
 }
 
 .tile {
-
+    font-family: "nyt-franklin";
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: bold;
+    vertical-align: middle;
+    box-sizing: border-box;
+    color: var(--tile-text-color);
+    text-transform: uppercase;
+    user-select: none;
+    border: 2px solid var(--color-tone-4);
 }
 
-.keyContainer {
+.keyboard {
+    height: var(--keyboard-height);
+    margin: 0 auto;
+    user-select: none;
 
+    width: 100%;
+    max-width: var(--game-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - var(--header-toolbar-height));
+    max-height: calc(100% - 210px - var(--header-height));
 }
 
-.key {
+.keyboardRow {
+    display: flex;
+    width: 100%;
+    margin: 0 auto var(--vertical-spacing-1);
+    touch-action: manipulation;
+}
 
+.keyboard button {
+    font-family: "nyt-franklin";
+    font-size: 1.25em;
+    font-weight: bold;
+    border: 0;
+    padding: 0;
+    margin: 0 calc(var(--horizontal-spacing-0-5) * 1.5) 0 0;
+    height: 58px;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--key-bg);
+    color: var(--key-text-color);
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+}
+
+.keyHalf {
+    flex: .5;
 }
