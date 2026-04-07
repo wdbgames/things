@@ -23,8 +23,9 @@ let g_mouseDownX = 0;
 let g_mouseDownY = 0;
 let g_mouseDown = false;
 
-let g_offsetX = g_canvas.width / 2;
-let g_offsetY = g_canvas.height / 2;
+let g_zoom = 1;
+let g_offsetX = 0;
+let g_offsetY = 0;
 
 window.addEventListener("resize", resize);
 
@@ -49,7 +50,11 @@ document.addEventListener("mouseup", (event) => {
 });
 
 document.addEventListener("wheel", (event) => {
-    updateSelectedMass(Math.floor(event.deltaY / 100));
+    if (g_mouseDown) {
+        updateSelectedMass(Math.floor(event.deltaY / 100));
+    } else {
+        updateZoom(Math.floor(event.deltaY / 100));
+    }
 });
 
 document.addEventListener("keydown", (event) => { 
@@ -69,7 +74,7 @@ function addObjectClick(x0, y0, x1, y1) {
     const velocityMultiplier = 0.1;
     const vx = (x1 - x0) * velocityMultiplier;
     const vy = (y1 - y0) * velocityMultiplier;
-    addObject(g_selectedMass, x0 - g_offsetX, y0 - g_offsetY, vx, vy);
+    addObject(g_selectedMass, (x0 - g_offsetX) / g_zoom, (y0 - g_offsetY) / g_zoom, vx, vy);
 }
 
 function updateSelectedMass(x) {
@@ -85,19 +90,46 @@ function updateSelectedMass(x) {
     }
 
     if (g_selectedMass < min) {
-        g_selectedMass = max;
+        g_selectedMass = min;
     }
 
     if (g_selectedMass > max) {
-        g_selectedMass = min;
+        g_selectedMass = max;
     }
+}
+
+function updateZoom(i) {
+    const max = 1000000;
+    const min = 0.000001;
+
+    const zoomMultiplier = 1.1;
+    const prevZoom = g_zoom;
+
+    if (i < 0) {
+        g_zoom /= zoomMultiplier;
+    }
+
+    if (i > 0) {
+        g_zoom *= zoomMultiplier;
+    } 
+
+    if (g_zoom < min) {
+        g_zoom = min;
+    }
+
+    if (g_zoom > max) {
+        g_zoom = max;
+    }
+
+    g_offsetX = centerX - (g_canvas.width / 2 - g_offsetX) * (g_zoom / prevZoom);
+    g_offsetY = centerY - (g_canvas.height / 2 - g_offsetY) * (g_zoom / prevZoom);
 }
 
 function renderObject(radius, x, y) {
     g_ctx.fillStyle = `hsl(${radius * 10}, 100%, 50%)`;
 
     g_ctx.beginPath();
-    g_ctx.arc(x + g_offsetX, y + g_offsetY, radius, 0, Math.PI * 2);
+    g_ctx.arc(x * g_zoom + g_offsetX, y * g_zoom + g_offsetY, radius * g_zoom, 0, Math.PI * 2);
     g_ctx.fill();
 }
 
@@ -126,20 +158,20 @@ function removeObject(i) {
 }
 
 function start() {
-    generate(2);
+    generate(10);
 
     resize();
+
+    g_offsetX = g_canvas.width / 2;
+    g_offsetY = g_canvas.height / 2;
 }
 
 function generate(x) {
-    /*W
-    for (let i = 0; i < x; ++i) {
-        Math.random();
-        addObject(Math.random() * 1000, Math.random() * 1000 - 500, Math.random() * 1000 - 500, Math.random(), Math.random());
-    }
-    */
+    addObject(10000, 0, 0, 0, 0);
 
-    addObject(1000, 0, 0, 0, 0);
+    for (let i = 0; i < x; ++i) {
+        addObject(Math.random() * 100, Math.random() * 1000 - 500, Math.random() * 1000 - 500, Math.random() * 5, Math.random() * 5);
+    }
 }
 
 function update() {
@@ -196,7 +228,7 @@ function render() {
     });
 
     if (g_mouseDown) {
-        renderObject(calculateRadius(g_selectedMass), g_mouseDownX - g_offsetX, g_mouseDownY - g_offsetY);
+        renderObject(calculateRadius(g_selectedMass), (g_mouseDownX - g_offsetX) / g_zoom, (g_mouseDownY - g_offsetY) / g_zoom);
         renderTrajectory(g_mouseDownX, g_mouseDownY, g_mouseX, g_mouseY);
     }
 }
