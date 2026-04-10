@@ -187,8 +187,8 @@ function start() {
 }
 
 function generate() {
-    const centralType = Math.floor(Math.random() * 4);
-    const orbitingType = Math.floor(Math.random() * 3);
+    const centralType = Math.floor(Math.random() * 5);
+    const orbitingType = Math.floor(Math.random() * 5);
     const otherType = Math.floor(Math.random() * 1);
 
     switch(centralType) {
@@ -207,6 +207,9 @@ function generate() {
 
                 addObject(100, 1, Math.cos(degree) * 250, Math.sin(degree) * 250, 0, 0);
             }
+            break;
+        case 4:
+            addObject(Math.floor(Math.random() * 100000), 1, 0, 0, 0, 0);
             break;
         default:
             break; 
@@ -230,6 +233,20 @@ function generate() {
                 addObject(Math.random() * 100, 1, Math.cos(degree) * 1000, Math.sin(degree) * 1000, 0, 0);
             }
             break;
+        case 3:
+            for (let i = 0; i < Math.floor(Math.random() * 50); ++i) {
+                const randomX = Math.random() * 10000 - 5000;
+                const randomY = Math.random() * 10000 - 5000;
+
+                addObject(Math.random() * 200, 1, randomX, randomY, Math.random() * 10, Math.random() * 10);
+            }
+            break;  
+        case 4:
+            const randomX = Math.random() * 10000 - 5000;
+            const randomY = Math.random() * 10000 - 5000;
+
+            addObject(Math.random() * 1000, 1, randomX, randomY, 0, 0);
+            break;  
         default:
             break; 
     }
@@ -241,20 +258,6 @@ function generate() {
             break;
     }
 }
-
-/*
-function generate(x) {
-    addObject(100000, 0, 0, 0, 0, 0);
-    // addObject(10000, 1, 0, 0, 0, 0);
-
-    for (let i = 0; i < x; ++i) {
-        const randomX = Math.random() * 10000 - 5000;
-        const randomY = Math.random() * 10000 - 5000;
-
-        addObject(Math.random() * 100, 1, randomX, randomY, Math.random() * 5, Math.random() * 5);
-    }
-}
-    */
 
 function update() {
     let temp = performance.now();
