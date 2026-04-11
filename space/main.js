@@ -5,17 +5,19 @@ const g_objects = [];
 
 // CONSTANTS
 const g_gravity = 1;
-const g_softening = 0.01;
+const g_softening = 0.001;
 const g_collisions = true;
-const g_simulationSpeed = 0.1;
+const g_simulationSpeed = 1;
 
-let g_selectedMass = 0;
+let g_selectedMass = 10;
 let g_selectedDensity = 1;
+let g_selectedObject = 0;
 
 let g_deltaTime = 0;
 let g_deltaTimeTemp = 0;
 
 const g_keys = [];
+const g_keysOnce = [];
 
 let g_mouseX = 0;
 let g_mouseY = 0;
@@ -31,6 +33,7 @@ let g_offsetY = 0;
 const g_crosshairSize = 16;
 const g_speed = 1;
 const g_minRadius = 1;
+const g_lock = true;
 
 window.addEventListener("resize", resize);
 
@@ -64,10 +67,14 @@ document.addEventListener("wheel", (event) => {
 
 document.addEventListener("keydown", (event) => { 
     g_keys[event.key] = true;
+    if (!event.repeat) {
+        g_keysOnce[event.key] = true;
+    }
 });
 
 document.addEventListener("keyup", (event) => { 
     g_keys[event.key] = false;
+    g_keysOnce[event.key] = false;
 });
 
 function resize() {
@@ -128,8 +135,10 @@ function updateZoom(x) {
         g_zoom = max;
     }
 
-    g_offsetX = (g_offsetX - g_canvas.width / 2) * (g_zoom / prevZoom) + g_canvas.width / 2;
-    g_offsetY = (g_offsetY - g_canvas.height / 2) * (g_zoom / prevZoom) + g_canvas.height / 2;
+    if (g_lock) {
+        g_offsetX = (g_offsetX - g_canvas.width / 2) * (g_zoom / prevZoom) + g_canvas.width / 2;
+        g_offsetY = (g_offsetY - g_canvas.height / 2) * (g_zoom / prevZoom) + g_canvas.height / 2;
+    }
 }
 
 function renderCrosshair(size) {
@@ -186,76 +195,40 @@ function start() {
     g_offsetY = g_canvas.height / 2;
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function generate() {
-    const centralType = Math.floor(Math.random() * 5);
-    const orbitingType = Math.floor(Math.random() * 5);
-    const otherType = Math.floor(Math.random() * 1);
+    const centralMass = getRandomInt(0, 100000);
+    const centralDensity = getRandomInt(getRandomInt(0, 1), 1);
+    const centralRadius = calculateRadius(centralMass, centralDensity);
+    addObject(centralMass, centralDensity, 0, 0, 0, 0);
 
-    switch(centralType) {
+    const orbitingAmount = getRandomInt(0, 100);
+    for(let i = 0; i < orbitingAmount; ++i) {
+        const orbitingAngle = getRandomInt(0, 359);
+        const orbitingDistance = getRandomInt(Math.floor(centralRadius), centralMass);
+        const orbitingSpeed = Math.sqrt(centralMass / orbitingDistance);
+
+        const orbitingMass = getRandomInt(0, centralMass / 100);
+        const orbitingX = Math.cos(orbitingAngle) * orbitingDistance;
+        const orbitingY = Math.sin(orbitingAngle) * orbitingDistance;
+        const orbitingVX = -Math.sin(orbitingAngle) * orbitingSpeed;
+        const orbitingVY = Math.cos(orbitingAngle) * orbitingSpeed;
+
+        addObject(orbitingMass, 1, orbitingX, orbitingY, orbitingVX, orbitingVY);
+    }
+}
+
+function generateTemp() {
+    const type = getRandomInt(0, 1);
+
+    switch(type) {
         case 0:
-            break;
-        case 1:
-            addObject(100000, 0, 0, 0, 0, 0);
-            break;
-        case 2:
-            addObject(10000, 1, 0, 0, 0, 0);
-            break;
-        case 3:
-            addObject(1000, 1, 0, 0, 0, 0);
-            for (let i = 0; i < 20; ++i) {
-                const degree = Math.floor(Math.random() * 360);
-
-                addObject(100, 1, Math.cos(degree) * 250, Math.sin(degree) * 250, 0, 0);
-            }
-            break;
-        case 4:
-            addObject(Math.floor(Math.random() * 100000), 1, 0, 0, 0, 0);
             break;
         default:
             break; 
-    }
-
-    switch(orbitingType) {
-        case 0:
-            break;
-        case 1:
-            for (let i = 0; i < 10; ++i) {
-                const randomX = Math.random() * 10000 - 5000;
-                const randomY = Math.random() * 10000 - 5000;
-
-                addObject(Math.random() * 100, 1, randomX, randomY, Math.random() * 5, Math.random() * 5);
-            }
-            break;  
-        case 2:
-            for (let i = 0; i < 20; ++i) {
-                const degree = Math.floor(Math.random() * 360);
-
-                addObject(Math.random() * 100, 1, Math.cos(degree) * 1000, Math.sin(degree) * 1000, 0, 0);
-            }
-            break;
-        case 3:
-            for (let i = 0; i < Math.floor(Math.random() * 50); ++i) {
-                const randomX = Math.random() * 10000 - 5000;
-                const randomY = Math.random() * 10000 - 5000;
-
-                addObject(Math.random() * 200, 1, randomX, randomY, Math.random() * 10, Math.random() * 10);
-            }
-            break;  
-        case 4:
-            const randomX = Math.random() * 10000 - 5000;
-            const randomY = Math.random() * 10000 - 5000;
-
-            addObject(Math.random() * 1000, 1, randomX, randomY, 0, 0);
-            break;  
-        default:
-            break; 
-    }
-
-    switch(otherType) {
-        case 0:
-            break;
-        default:
-            break;
     }
 }
 
@@ -263,22 +236,6 @@ function update() {
     let temp = performance.now();
     g_deltaTime = temp - g_deltaTimeTemp;
     g_deltaTimeTemp = temp;
-
-    if (g_keys["a"]) {
-        g_offsetX += g_speed * g_deltaTime;
-    }
-
-    if (g_keys["d"]) {
-        g_offsetX -= g_speed * g_deltaTime;
-    }
-
-    if (g_keys["w"]) {
-        g_offsetY += g_speed * g_deltaTime;
-    }
-
-    if (g_keys["s"]) {
-        g_offsetY -= g_speed * g_deltaTime;
-    }
 
     g_objects.forEach((objectA) => {
         g_objects.forEach((objectB) => {
@@ -291,8 +248,8 @@ function update() {
             const d = Math.sqrt(dx * dx + dy * dy) + g_softening;
             const ax = g_gravity * ((objectB.mass * dx) / (d * d * d));
             const ay = g_gravity * ((objectB.mass * dy) / (d * d * d));
-            objectA.vx += ax;
-            objectA.vy += ay;
+            objectA.vx += ax * g_deltaTime * g_simulationSpeed;
+            objectA.vy += ay * g_deltaTime * g_simulationSpeed;
 
             if (g_collisions) {
                 if (objectA.x - objectA.radius <= objectB.x + objectB.radius &&
@@ -326,6 +283,43 @@ function update() {
             if (g_objects[i].mass == 0) {
                 g_objects.splice(i, 1);
             }
+        }
+    }
+
+    if (g_lock) {
+        if (g_keysOnce["ArrowLeft"]) {
+            g_keysOnce["ArrowLeft"] = false;
+            --g_selectedObject;
+        }
+
+        if (g_keysOnce["ArrowRight"]) {
+            g_keysOnce["ArrowRight"] = false;
+            ++g_selectedObject;
+        }
+
+        const x = g_objects[g_selectedObject]?.x || 0;
+        const y = g_objects[g_selectedObject]?.y || 0;
+        g_offsetX = g_canvas.width / 2 - x * g_zoom;
+        g_offsetY = g_canvas.height / 2 - y * g_zoom;
+    } else {
+        if (g_keys["a"]) {
+            g_offsetX += g_speed * g_deltaTime;
+        }
+
+        if (g_keys["d"]) {
+            g_offsetX -= g_speed * g_deltaTime;
+        }
+
+        if (g_keys["w"]) {
+            g_offsetY += g_speed * g_deltaTime;
+        }
+
+        if (g_keys["s"]) {
+            g_offsetY -= g_speed * g_deltaTime;
+        }
+
+        if (g_keys["x"]) {
+            console.log(g_objects);
         }
     }
 }
